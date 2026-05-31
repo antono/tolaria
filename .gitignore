@@ -86,3 +86,8 @@ CODE-HEALTH-REPORT.md
 .codacy/tools-configs/*
 !.codacy/tools-configs/semgrep.yaml
 !.codacy/tools-configs/trivy.yaml
+
+# Nix build artifacts and direnv cache
+result
+result-*
+.direnv/
