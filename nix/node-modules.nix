@@ -39,7 +39,7 @@ pkgs.fetchPnpmDeps {
   # fetcher for pnpm 9/10/11.
   pnpm = pkgs.pnpm_11 or pkgs.pnpm;
   fetcherVersion = 3;
-  hash = "sha256-Fger8Ia8o+woicK+AKtiYqmkkKsHqllBgDaM9U8u4Nc=";
+  hash = "sha256-31chGkxb8mXS5v6QAKLwPFybUgNc8cgDbGT1rHHfk14=";
 
   # Mirror pnpm.overrides + pnpm.patchedDependencies from package.json into
   # pnpm-workspace.yaml so pnpm 11's strict frozen-install reads them, and
