@@ -44,6 +44,7 @@ pkgs.stdenv.mkDerivation {
   nativeBuildInputs = [
     pnpm
     pkgs.nodejs_24
+    pkgs.sqlite
     pkgs.makeWrapper
   ];
 
@@ -58,11 +59,19 @@ pkgs.stdenv.mkDerivation {
       | tar -x -C "$pnpmStore"
     chmod -R u+w "$pnpmStore"
 
+    # fetcherVersion 4 ships the pnpm v11 store index as an SQL dump instead of
+    # the binary index.db (for reproducibility); reconstruct it before install.
+    if [ -f "$pnpmStore/v11/index.db.sql" ]; then
+      sqlite3 "$pnpmStore/v11/index.db" < "$pnpmStore/v11/index.db.sql"
+      rm "$pnpmStore/v11/index.db.sql"
+    fi
+
     # pnpm 11 strict install needs overrides + patched deps in
     # pnpm-workspace.yaml; mirror them from package.json#pnpm in-place.
     ${pnpmConfigMerge}
 
     pnpm config set store-dir "$pnpmStore"
+    pnpm config set package-import-method clone-or-copy
     pnpm install --offline --frozen-lockfile --ignore-scripts
 
     runHook postConfigure

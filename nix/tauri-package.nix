@@ -68,6 +68,7 @@ let
     clang
     cmake
     python3
+    sqlite
     wrapGAppsHook3
   ];
 
@@ -169,12 +170,20 @@ craneLib.buildPackage {
       | tar -x -C "$pnpmStore"
     chmod -R u+w "$pnpmStore"
 
+    # fetcherVersion 4 ships the pnpm v11 store index as an SQL dump instead of
+    # the binary index.db (for reproducibility); reconstruct it before install.
+    if [ -f "$pnpmStore/v11/index.db.sql" ]; then
+      sqlite3 "$pnpmStore/v11/index.db" < "$pnpmStore/v11/index.db.sql"
+      rm "$pnpmStore/v11/index.db.sql"
+    fi
+
     # Same fix as in node-modules.nix: pnpm 11 reads workspace config from
     # pnpm-workspace.yaml, mirror the pnpm.overrides and patchedDependencies
     # blocks from package.json so the frozen install matches the lockfile.
     ${pnpmConfigMerge}
 
     pnpm config set store-dir "$pnpmStore"
+    pnpm config set package-import-method clone-or-copy
     pnpm install --offline --frozen-lockfile --ignore-scripts
   '';
 

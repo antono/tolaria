@@ -35,11 +35,12 @@ pkgs.fetchPnpmDeps {
   version = "0.1.0";
   inherit src;
   # Pin to pnpm 11 to match the project (package.json field implicit, lockfile
-  # version 9 + v11 store layout). fetcherVersion 3 is the nixpkgs 26.11+
-  # fetcher for pnpm 9/10/11.
+  # version 9 + v11 store layout). fetcherVersion 4 is required by nixpkgs
+  # 26.11+ for pnpm 11 (v3 dumps a non-reproducible SQLite index.db; v4 stores
+  # it as an index.db.sql dump reconstructed by pnpmConfigHook/our consumers).
   pnpm = pkgs.pnpm_11 or pkgs.pnpm;
-  fetcherVersion = 3;
-  hash = "sha256-31chGkxb8mXS5v6QAKLwPFybUgNc8cgDbGT1rHHfk14=";
+  fetcherVersion = 4;
+  hash = "sha256-w3wjhidsEDbw9CCvxG/apQW79+ik3r083oSS2vP5V9c=";
 
   # Mirror pnpm.overrides + pnpm.patchedDependencies from package.json into
   # pnpm-workspace.yaml so pnpm 11's strict frozen-install reads them, and
